@@ -3,6 +3,13 @@ import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import config from '../config/index.js';
 
+const PROFILE_FIELDS = [
+    'firstName', 'lastName', 'fullName',
+    'phone', 'location', 'address', 'citizenship',
+    'ethnicity', 'veteran', 'gender', 'pronouns',
+    'resume', 'github', 'linkedin'
+];
+
 export async function registerUser({ email, password }) {
     const exists = await User.findOne({ where: { email } });
     if (exists) {
@@ -47,4 +54,19 @@ export function verifyToken(token) {
         error.status = 401;
         throw error;
     }
+}
+
+export async function updateUserProfile(userId, profileFields) {
+    const toUpdate = {};
+    for (const key of PROFILE_FIELDS) {
+        if (profileFields[key] !== undefined) {
+            toUpdate[key] = profileFields[key];
+        }
+    }
+    await User.update(toUpdate, { where: { id: userId } });
+
+    const updatedUser = await User.findByPk(userId, {
+        attributes: { exclude: ['passwordHash'] }
+    });
+    return updatedUser;
 }
