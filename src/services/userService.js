@@ -3,12 +3,7 @@ import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import config from '../config/index.js';
 
-const PROFILE_FIELDS = [
-    'firstName', 'lastName', 'fullName',
-    'phone', 'location', 'address', 'citizenship',
-    'ethnicity', 'veteran', 'gender', 'pronouns',
-    'resume', 'github', 'linkedin'
-];
+const PROFILE_FIELDS = ['firstName', 'lastName', 'fullName', 'phone', 'location', 'address', 'citizenship', 'ethnicity', 'veteran', 'gender', 'pronouns', 'resume', 'github', 'linkedin'];
 
 export async function registerUser({ email, password }) {
     const exists = await User.findOne({ where: { email } });
@@ -28,7 +23,7 @@ export async function loginUser({ email, password }) {
     if (!user) {
         const error = new Error('Invalid credentials');
         error.status = 401;
-        throw err;
+        throw error;
     }
 
     const ok = await bcrypt.compare(password, user.passwordHash);
